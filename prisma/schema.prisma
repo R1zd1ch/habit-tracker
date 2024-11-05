@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int     @id @default(autoincrement())
+  email       String  @unique
+  password    String?
+  name        String?
+  description String?
+  aboutMe     String?
+  image       String?
+  role        Role    @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  habits   Habit[]
+  accounts Account[]
+}
+
+model Habit {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  targetDays  Int
+  userId      Int
+  color       String?
+  show        Boolean?
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id])
+  progress  Progress[]
+}
+
+model Progress {
+  id            Int      @id @default(autoincrement())
+  habitId       Int
+  habit         Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date          DateTime
+  completed     Boolean
+  completedDays Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                 Int       @id @default(autoincrement())
+  provider           String
+  providerAccountId  String
+  userId             Int
+  type               String
+  refreshToken       String?
+  accessToken        String?
+  accessTokenExpires DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
