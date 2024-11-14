@@ -54,6 +54,9 @@ const AllProgress: FC<AllProgressProps> = ({ props = [] }) => {
         <CardDescription>Диаграмма общего прогресса</CardDescription>
       </CardHeader>
       <CardContent className=" pb-0">
+        {props.length === 0 && (
+          <CardDescription className="text-center">У вас ещё нет привычек</CardDescription>
+        )}
         <ChartContainer config={chartConfig}>
           <ResponsiveContainer width="100%" height={150}>
             <PieChart>

@@ -15,8 +15,6 @@ const getProgressPercentage = (completedDays: number, targetDays: number) => {
 
 const EachProgress: FC<EachProgressProps> = ({ props = [] }) => {
   console.log(props);
-  console.log('props', getProgressPercentage(props[0].progress.completedDays, props[0].targetDays));
-  console.log('propsik', props[0].targetDays, props[0].progress[0].completedDays);
   return (
     <Card className="flex flex-col gap-2 min-h-[275px] sm:min-h-[317px] shadow-black/20 shadow-lg">
       <CardHeader className="items-center pb-2">

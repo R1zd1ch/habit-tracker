@@ -73,7 +73,18 @@ const HabitTrackerCard: FC = () => {
           </div>
           <div className="flex-1 gap-2 flex flex-col">
             {habits ? (
-              <EachProgress props={habits}></EachProgress>
+              habits.length > 0 ? (
+                <EachProgress props={habits}></EachProgress>
+              ) : (
+                <Card.Card className="flex flex-col gap-2 min-h-[275px] sm:min-h-[317px] shadow-black/20 shadow-lg">
+                  <Card.CardHeader className="items-center pb-2">
+                    <Card.CardTitle>Прогресс по каждой привычке</Card.CardTitle>
+                    <Card.CardDescription>
+                      У вас ещё нет привычек, создайте какую-нибудь
+                    </Card.CardDescription>
+                  </Card.CardHeader>
+                </Card.Card>
+              )
             ) : (
               <SkeletonEachProgress></SkeletonEachProgress>
             )}
