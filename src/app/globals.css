@@ -59,6 +59,8 @@ body {
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --scrollbar-bg: #e0e0e0; /* Light theme track */
+    --scrollbar-thumb: #b0b0b0; /* Light theme thumb */
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -93,6 +95,8 @@ body {
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --scrollbar-bg: #1a1a1a; /* Dark theme track */
+    --scrollbar-thumb: #4d4d4d; /* Dark theme thumb */
   }
 }
 
@@ -103,4 +107,33 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Minimalist scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px; /* Slim width */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg); /* Track color based on theme */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb); /* Thumb color based on theme */
+  border-radius: 10px; /* Rounded corners */
+  transition: background-color 0.3s; /* Smooth color transition */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: darken(var(--scrollbar-thumb), 10%); /* Darker thumb on hover */
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin; /* Slim scrollbar */
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg); /* Thumb and track color */
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }

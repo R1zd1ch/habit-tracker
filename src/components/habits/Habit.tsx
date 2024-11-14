@@ -5,7 +5,6 @@ import { Check, X } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import EditHabitDialog from './EditHabit';
 import { MoreHabit } from './MoreHabit';
-import { useSession } from 'next-auth/react';
 
 type Progress = {
   id: number;
@@ -24,7 +23,8 @@ type HabitProps = {
   targetDays: number;
   color?: string;
   createdAt: string;
-  progress: Progress | Progress[]; // Accept progress as an object or array
+  progress: Progress | Progress[];
+  userId: number;
   onUpdate: (habit: {
     id: number;
     title: string;
@@ -46,10 +46,9 @@ const HabitCard: React.FC<HabitProps> = ({
   onDelete,
   createdAt,
   progress,
+  userId,
 }) => {
-  const { data: session }: any = useSession();
   const [currentProgress, setCurrentProgress] = useState<Progress | null>(null);
-  const userId = session?.user?.id;
 
   // Ensure `currentProgress` is set to the first item if `progress` is an array
   useEffect(() => {
@@ -59,6 +58,10 @@ const HabitCard: React.FC<HabitProps> = ({
       console.log('Progress updated from props:', resolvedProgress);
     }
   }, []);
+
+  const onUpdateProgress = (completed: boolean) => {
+    setCurrentProgress(currentProgress?.id ? { ...currentProgress, completed } : null);
+  };
 
   const handleDelete = async () => {
     try {
@@ -142,6 +145,8 @@ const HabitCard: React.FC<HabitProps> = ({
           targetDays={targetDays}
           color={color}
           onUpdate={onUpdate}
+          completedDays={currentProgress?.completedDays || 0}
+          onUpdateProgress={onUpdateProgress}
         />
       </div>
     </Card>
@@ -186,6 +191,8 @@ const HabitCard: React.FC<HabitProps> = ({
             targetDays={targetDays}
             color={color}
             onUpdate={onUpdate}
+            completedDays={currentProgress?.completedDays || 0}
+            onUpdateProgress={onUpdateProgress}
           />
         </div>
         <MoreHabit

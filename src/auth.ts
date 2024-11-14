@@ -17,12 +17,12 @@ export const handler = NextAuth({
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider !== 'credentials') {
-        // Проверяем, существует ли пользователь
-        let existingUser = (await db.user.findUnique({
+        // Check if the user exists in the database
+        let existingUser = await db.user.findUnique({
           where: { email: user.email as any },
-        })) as any;
+        });
 
-        // Если пользователь не существует, создаем его
+        // If the user does not exist, create it
         if (!existingUser) {
           existingUser = await db.user.create({
             data: {
@@ -33,7 +33,7 @@ export const handler = NextAuth({
           });
         }
 
-        // Сохраняем учетную запись провайдера, если она еще не привязана
+        // Save the provider account if it does not exist
         const accountExists = await db.account.findFirst({
           where: {
             userId: existingUser.id,
@@ -60,58 +60,65 @@ export const handler = NextAuth({
     },
     async jwt({ token, user }) {
       if (user) {
-        token.email = user.email;
-        const userIdDB = await db.user.findUnique({
+        // Fetch user data from the database and update token fields
+        const userInDb = await db.user.findUnique({
           where: { email: user.email as any },
         });
-        token.id = userIdDB?.id;
-        token.image = user.image;
-        token.name = user.name;
+        if (userInDb) {
+          token.id = userInDb.id;
+          token.email = userInDb.email;
+          token.name = userInDb.name;
+          token.image = userInDb.image;
+          token.password = userInDb.password;
+          token.role = userInDb.role;
+        }
+        if (!userInDb) {
+          token.id = user.id;
+          token.email = user.email;
+          token.name = user.name;
+          token.image = user.image;
+        }
       }
       return token;
     },
+
     async session({ session, token }: any) {
-      if (token) {
+      // Use token data to set session fields with values from the database
+      if (token && token.id) {
+        const userInDb = await db.user.findUnique({
+          where: { id: token.id },
+        });
+
         session.user = {
-          image: token.image,
-          name: token.name,
-          email: token.email,
           id: token.id,
+          email: userInDb?.email || token.email,
+          name: userInDb?.name || token.name,
+          image: userInDb?.image || token.image,
+          password: userInDb?.password || '',
+          role: userInDb?.role || 'user',
         };
-        return session;
       }
+      return session;
     },
     async redirect({ baseUrl }) {
-      // Получаем токен пользователя для идентификации
-      const session = await getSession(); // Используем `getSession` для получения токена сессии
+      const session = await getSession();
 
-      // Проверяем, если сессия не найдена, возвращаем базовый URL
       if (!session || !session.user) {
         return baseUrl;
       }
 
       const email = session.user.email;
-
-      // Проверяем в базе данных, существует ли пользователь и установлен ли пароль
       const user = await db.user.findUnique({
         where: { email: email as any },
       });
 
-      // Если пользователь не найден, возвращаем базовый URL
       if (!user) {
         return baseUrl;
       }
 
-      // Определяем, нужно ли перенаправить пользователя на установку пароля
-      const isNewUser = !user.password; // Если пароля нет, пользователь считается новым
+      const isNewUser = !user.password;
 
-      if (isNewUser) {
-        // Перенаправляем на страницу установки пароля
-        return `${baseUrl}/set-password`;
-      }
-
-      // Перенаправляем на домашнюю страницу, если пароль уже установлен
-      return baseUrl;
+      return isNewUser ? `${baseUrl}/set-password` : baseUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

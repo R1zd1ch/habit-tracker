@@ -7,6 +7,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { cookies } from 'next/headers';
 import { CustomTrigger } from '@/components/sideBar/CustomTrigger';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from 'sonner';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -43,8 +44,10 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               {/* <div className="grid grid-cols-1 grid-cols-[auto_1fr] grid-cols-1 w-full"> */}
+              <Toaster />
               <div className="grid grid-cols-1 w-full sm:grid-cols-[auto_1fr]">
                 <AppSidebar></AppSidebar>
+
                 <main className="flex flex-col min-h-screen">
                   <CustomTrigger />
                   {/* <SidebarTrigger /> */}

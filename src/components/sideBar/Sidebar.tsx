@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Calendar, ChevronUp, Home, Mail, LoaderCircle, Notebook } from 'lucide-react';
+import { ChevronUp, Home, LoaderCircle, Notebook } from 'lucide-react';
 
 import {
   Sidebar,
@@ -41,19 +41,9 @@ const items = [
     icon: Notebook,
   },
   {
-    title: 'Calendar',
-    url: '#',
-    icon: Calendar,
-  },
-  {
     title: 'Прогресс',
-    url: '#',
+    url: '/progress',
     icon: LoaderCircle,
-  },
-  {
-    title: 'Сообщения',
-    url: '#',
-    icon: Mail,
   },
 ];
 
@@ -61,12 +51,16 @@ export function AppSidebar() {
   const { data: session, status }: any = useSession();
   const [isLoaded, setIsLoaded] = useState(false);
   const avatarFallback = session?.user?.name?.charAt(0).toUpperCase();
+  const [name, setName] = useState(session?.user?.name);
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
+  useEffect(() => {
+    setName(session?.user?.name);
+  }, [session]);
 
   return (
     <Sidebar variant="floating">
@@ -102,12 +96,12 @@ export function AppSidebar() {
           <SidebarMenuItem>
             {!isLoaded || status === 'loading' ? (
               // Skeleton loader while session data is loading
-              <div className="flex items-center space-x-2 h-16 justify-center">
-                <Skeleton className="h-12 w-12 rounded-full bg-neutral-300" />
+              <Skeleton className="flex items-center space-x-2 h-16 justify-center bg-secondary">
+                <Skeleton className="h-12 w-12 rounded-full bg-neutral-400 dark:bg-neutral-500" />
                 <div className="space-y-2">
-                  <Skeleton className="h-6 w-[250px]  bg-neutral-300" />
+                  <Skeleton className="h-6 w-[250px] bg-neutral-400 dark:bg-neutral-500" />
                 </div>
-              </div>
+              </Skeleton>
             ) : session ? (
               // Меню для вошедшего пользователя
               <DropdownMenu>
@@ -117,7 +111,7 @@ export function AppSidebar() {
                       <AvatarImage src={`${session?.user?.image}`} />
                       <AvatarFallback className="border-2">{avatarFallback}</AvatarFallback>
                     </Avatar>
-                    {session?.user?.name}
+                    {name}
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>

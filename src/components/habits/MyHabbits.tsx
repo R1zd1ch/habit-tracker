@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import BreadCrumb from '@/utils/makeBreadCrum';
@@ -16,32 +15,36 @@ import { useSession } from 'next-auth/react';
 import Habit from './Habit';
 
 const pathnames = [
-  {
-    label: 'Главная',
-    url: '/',
-  },
-  {
-    label: 'Мои привычки',
-    url: '/habits',
-  },
+  { label: 'Главная', url: '/' },
+  { label: 'Мои привычки', url: '/habits' },
 ];
 
 export const Habits = () => {
   const [habits, setHabits] = useState<any[]>([]);
-  const { data: session }: any = useSession();
+  const { data: session, status }: any = useSession();
   const [sortByTime, setSortByTime] = useState('');
   const [colorFilter, setColorFilter] = useState('');
-  const userId = session?.user?.id || 1;
+  const [byDate, setByDate] = useState('');
+  const userId = session?.user?.id;
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchHabits = async () => {
-      const response = await fetch(`/api/habits?userId=${userId}`);
-      const data = await response.json();
-      setHabits(data);
-      console.log(data);
-    };
-    fetchHabits();
-  }, []);
+    if (status === 'authenticated' && userId) {
+      const fetchHabits = async () => {
+        try {
+          const response = await fetch(`/api/habits?userId=${userId}`);
+          const data = await response.json();
+          setHabits(data);
+          console.log(data);
+        } catch (error) {
+          console.error('Error fetching habits:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchHabits();
+    }
+  }, [status, userId]);
 
   const handleAddHabit = (newHabit: any) => {
     setHabits((prevHabits) => [newHabit, ...prevHabits]);
@@ -76,11 +79,20 @@ export const Habits = () => {
       } else {
         return true;
       }
+    })
+    .sort((a, b) => {
+      if (byDate === 'desc') {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      } else if (byDate === 'asc') {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      } else {
+        return 0;
+      }
     });
 
   return (
     <>
-      <Card className="min-h-full m-2 sm:m-5  shadow-black/20 shadow-lg">
+      <Card className="min-h-full m-2 sm:m-5 shadow-black/20 shadow-lg">
         <CardHeader className="p-5 pb-0">
           <div>
             <BreadCrumb items={pathnames} />
@@ -91,7 +103,7 @@ export const Habits = () => {
           <Card className="flex flex-col justify-center items-center md:flex-row mt-2 p-4 gap-5">
             <span>Фильтры:</span>
             <Select onValueChange={(v) => setColorFilter(v)}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-[240px]">
                 <SelectValue placeholder="Цвет" />
               </SelectTrigger>
               <SelectContent>
@@ -107,7 +119,7 @@ export const Habits = () => {
               </SelectContent>
             </Select>
             <Select onValueChange={(v) => setSortByTime(v)}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-[240px]">
                 <SelectValue placeholder="По длительности" />
               </SelectTrigger>
               <SelectContent>
@@ -116,13 +128,25 @@ export const Habits = () => {
                 <SelectItem value="desc">По убыванию</SelectItem>
               </SelectContent>
             </Select>
+            <Select onValueChange={(v) => setByDate(v)}>
+              <SelectTrigger className="w-[240px]">
+                <SelectValue placeholder="По времени создания" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Без фильтра</SelectItem>
+                <SelectItem value="asc">С недавних</SelectItem>
+                <SelectItem value="desc">С давних</SelectItem>
+              </SelectContent>
+            </Select>
             <div className="sm:ml-auto">
-              <AddHabit onAddHabit={handleAddHabit}></AddHabit>
+              <AddHabit onAddHabit={handleAddHabit} session={session}></AddHabit>
             </div>
           </Card>
           <Card className="h-full mt-2 p-2 mx-0 sm:p-4 gap-5">
             <div className="flex flex-col gap-5">
-              {sortedHabits.length === 0 ? (
+              {isLoading ? (
+                <p className="text-center text-xl font-semibold">Загрузка привычек...</p>
+              ) : sortedHabits.length === 0 ? (
                 <p className="text-center text-xl font-semibold">Нет привычек</p>
               ) : (
                 sortedHabits.map((habit) => (
@@ -132,6 +156,7 @@ export const Habits = () => {
                       onUpdate={updateHabit}
                       onDelete={onDelete}
                       onProgress={onProgress}
+                      userId={userId}
                     />
                   </div>
                 ))

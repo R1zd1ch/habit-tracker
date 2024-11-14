@@ -33,6 +33,7 @@ type EditHabitDialogProps = {
   targetDays: number;
   color?: string;
   size: number;
+  completedDays: number;
   onUpdate: (habit: {
     id: number;
     title: string;
@@ -40,6 +41,7 @@ type EditHabitDialogProps = {
     targetDays: number;
     color?: string;
   }) => void;
+  onUpdateProgress: (completed: boolean) => void;
 };
 const colorSchema = {
   red: 'bg-red-500',
@@ -60,6 +62,8 @@ const EditHabitDialog: React.FC<EditHabitDialogProps> = ({
   color,
   onUpdate,
   size,
+  completedDays,
+  onUpdateProgress,
 }) => {
   const [updatedTitle, setUpdatedTitle] = useState(title);
   const [updatedDescription, setUpdatedDescription] = useState(description);
@@ -82,6 +86,7 @@ const EditHabitDialog: React.FC<EditHabitDialogProps> = ({
           description: updatedDescription,
           targetDays: updatedTargetDays,
           color: updatedColor,
+          completed: updatedTargetDays <= completedDays,
         }),
       });
 
@@ -93,6 +98,7 @@ const EditHabitDialog: React.FC<EditHabitDialogProps> = ({
       console.log('Habit updated successfully:', updatedHabit);
 
       onUpdate(updatedHabit);
+      onUpdateProgress(updatedTargetDays <= completedDays);
       setIsOpen(false);
     } catch (error) {
       console.error('Error updating habit:', error);

@@ -94,7 +94,7 @@ export const SignUp = () => {
         <CardHeader>
           <CardTitle className="text-center">Регистрация</CardTitle>
           <CardDescription className="text-sm text-center text-accent-foreground max-w-[200px]">
-            Используйте свой почту или сервис для регистрации
+            Используйте свою почту или сервис для регистрации
           </CardDescription>
         </CardHeader>
         {!!error && (
@@ -172,7 +172,7 @@ export const SignUp = () => {
               variant="outline"
               size="lg"
               disabled={pending}
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-105"
+              className=" hover:scale-105"
             >
               <FaGoogle className="size-8 left-2.5 top-2.5" />
             </Button>
@@ -181,13 +181,16 @@ export const SignUp = () => {
               variant="outline"
               size="lg"
               disabled={pending}
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-105"
+              className=" hover:scale-105"
             >
               <FaGithub className="size-8 left-2.5 top-2.5" />
             </Button>
           </div>
           <p className="text-center text-sm mt-3 text-muted-foreground">Уже есть аккаунт?</p>
-          <Link className="text-sky-700 text-sm ml-1 hover:underline cursor-pointer" href="sign-in">
+          <Link
+            className="hover:text-sky-700 text-sm ml-1 hover:underline cursor-pointer"
+            href="sign-in"
+          >
             Войти
           </Link>
         </Form>

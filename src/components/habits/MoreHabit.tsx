@@ -1,5 +1,3 @@
-'use client';
-
 import { Ellipsis } from 'lucide-react';
 import { Pie, PieChart, Cell } from 'recharts';
 import { format } from 'date-fns';

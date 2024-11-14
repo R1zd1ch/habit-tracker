@@ -106,7 +106,7 @@ export const SignIn = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={pending} className="w-full rounded-md ">
+            <Button type="submit" disabled={pending} className="w-full rounded-md  ">
               Войти
             </Button>
           </form>
@@ -116,7 +116,7 @@ export const SignIn = () => {
               variant="outline"
               size="lg"
               disabled={pending}
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-105"
+              className="hover:scale-105"
             >
               <FaGoogle className="size-8 left-2.5 top-2.5" />
             </Button>
@@ -125,13 +125,16 @@ export const SignIn = () => {
               variant="outline"
               size="lg"
               disabled={pending}
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-105"
+              className=" hover:scale-105"
             >
               <FaGithub className="size-8 left-2.5 top-2.5" />
             </Button>
           </div>
           <p className="text-center text-sm mt-3 text-muted-foreground">Создать новый аккаунт</p>
-          <Link className="text-sky-700 text-sm ml-1 hover:underline cursor-pointer" href="sign-up">
+          <Link
+            className="hover:text-sky-700 text-sm ml-1 hover:underline cursor-pointer"
+            href="sign-up"
+          >
             Зарегистрироваться
           </Link>
         </Form>

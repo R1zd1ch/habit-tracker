@@ -1,7 +1,6 @@
-'use client';
 import React from 'react';
 
-import { Habits } from '@/components/habits/my-habits';
+import { Habits } from '@/components/habits/MyHabbits';
 
 const MyHabits = () => {
   return (

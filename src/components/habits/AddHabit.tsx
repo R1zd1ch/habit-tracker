@@ -21,7 +21,6 @@ import { Button } from '../ui/button';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { Textarea } from '@/components/ui/textarea';
 
 const colorSchema = {
@@ -35,8 +34,13 @@ const colorSchema = {
   teal: 'bg-teal-500',
 } as any;
 
-export const AddHabit = ({ onAddHabit }: { onAddHabit: (habit: any) => void }) => {
-  const { data: session } = useSession();
+export const AddHabit = ({
+  onAddHabit,
+  session,
+}: {
+  onAddHabit: (habit: any) => void;
+  session: any;
+}) => {
   const [title, setTitle] = useState('');
   const [color, setColor] = useState<any>('');
   const [description, setDescription] = useState('');

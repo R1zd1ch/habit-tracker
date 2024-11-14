@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const { id, title, description, targetDays, color } = await request.json();
+  const { id, title, description, targetDays, color, completed } = await request.json();
 
   try {
     const updatedHabit = await db.habit.update({
@@ -84,6 +84,19 @@ export async function PUT(request: NextRequest) {
         color,
       },
     });
+    const progress = await db.progress.findFirst({
+      where: { habitId: updatedHabit.id },
+    });
+
+    if (progress) {
+      await db.progress.update({
+        where: { id: progress.id },
+        data: {
+          completed,
+        },
+      });
+    }
+    console.log(progress);
 
     return NextResponse.json(updatedHabit, { status: 200 });
   } catch (error) {
@@ -92,6 +105,17 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+/**
+ * DELETE /api/habits?userId={userId}&habitId={habitId}
+ *
+ * Deletes a habit by ID.
+ *
+ * @param {number} userId - The ID of the user who owns the habit.
+ * @param {number} habitId - The ID of the habit to be deleted.
+ * @returns {Promise<NextResponse>} The response to the request.
+ *
+ * @throws {Error} If the request fails, an error is thrown.
+ */
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams }: any = new URL(request.url);
